@@ -8,7 +8,7 @@ import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import time
-from Site.DrHeadSite import DrHeadSite
+from Site import DrHeadSite, MvideoSite
 import json
 
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         file = open('prices.json', 'w')
         file.close()
 
-    sites = [DrHeadSite()]
+    sites = [DrHeadSite(), MvideoSite()]
 
     server_mail = 'smtp.gmail.com'
 
@@ -64,6 +64,8 @@ if __name__ == '__main__':
     # url = {'doctorhead': 'https://doctorhead.ru/product/sony_wh_1000xm3_black/',
     #       'mvideo': 'https://www.mvideo.ru/products/naushniki-bluetooth-sony-wh-1000xm3-black-50124192'}
     while True:
+        price_is_changed = False
+
         for site in sites:
             current_price = site.parse()
 
@@ -82,7 +84,11 @@ if __name__ == '__main__':
                 prices[site.name] = current_price
                 with open('prices.json', 'w', encoding='utf-8') as file_handler:
                     file_handler.write(json.dumps(prices, ensure_ascii=False))
-                body = str(current_price)
-                send_mail(login, password, recipients, body, 'price of headphones')
+                price_is_changed = True
+        if price_is_changed:
+            body = ''
+            for s in sites:
+                body += f'{prices[s.name]} {s.name} {s.url} \n'
+            send_mail(login, password, recipients, body, 'price of headphones')
 
         time.sleep(3600)

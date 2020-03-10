@@ -1,4 +1,4 @@
-from Site.Website import Website
+from Site import Website
 import re
 from bs4 import BeautifulSoup
 
