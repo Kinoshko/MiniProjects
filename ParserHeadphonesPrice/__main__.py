@@ -19,25 +19,10 @@ def send_mail(login: str, password: str, recipients: List[str], message: str, su
     msg['To'] = ','.join(recipients)
 
     msg.attach(MIMEText(message, 'plain'))
-
-    server = smtplib.SMTP_SSL(server_mail)
+    server = smtplib.SMTP_SSL('smtp.gmail.com')
     server.login(login, password)
     server.sendmail(login, recipients, msg.as_string())
     server.quit()
-
-
-def get_html(url: str, headers: Dict[str, str], params=None):
-    request = requests.get(url, headers=headers, params=params)
-    print(request.status_code)
-    if request.status_code == 200:
-        return request.text
-    return 'Error'
-
-
-def parse(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    items = soup.find('div', class_='dp_cur_price')
-    return int(re.sub(r'[\.!– \-@#$%^&*()|/"\']', '', items.get_text()))
 
 
 if __name__ == '__main__':
@@ -54,15 +39,8 @@ if __name__ == '__main__':
         file.close()
 
     sites = [DrHeadSite(), MvideoSite()]
-
-    server_mail = 'smtp.gmail.com'
-
     recipients = ['v.bityukov94@yandex.ru']
 
-    # HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'
-    #                         ' Chrome/79.0.3945.130 Safari/537.36', 'accept': '*/*'}
-    # url = {'doctorhead': 'https://doctorhead.ru/product/sony_wh_1000xm3_black/',
-    #       'mvideo': 'https://www.mvideo.ru/products/naushniki-bluetooth-sony-wh-1000xm3-black-50124192'}
     while True:
         price_is_changed = False
 
